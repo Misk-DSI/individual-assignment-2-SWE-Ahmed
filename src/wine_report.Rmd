@@ -1,0 +1,165 @@
+---
+title: EDA on The Red Wine Dataset
+author: Ahmed Almohammed
+date: June 16, 2022
+output: html_document
+
+knit: (function(input, ...) {
+    rmarkdown::render(
+      input,
+      output_dir = "../"
+    )})
+---
+
+> This is a short EDA on the assigned Red Wine Dataset for individual assignment 2.
+
+```{r include=FALSE}
+# load the necessary packages
+library(tidyverse)
+library(Hmisc)
+library(funModeling)
+library(here)
+library(janitor)
+library(corrplot)
+library(kableExtra)
+i_am("individual-assignment-2-SWE-Ahmed.Rproj")
+```
+
+# Data
+
+> Initialize the dataset
+```{r}
+# load the dataset
+red_wine_tibble  <- as_tibble(read.csv(here("data/winequality-red.csv")))
+
+# store the variable names to ease the process of making the static table
+tibble_names  <- names(red_wine_tibble)
+```
+
+## Static
+
+Variables           |   Description
+--------------------|------------
+`r tibble_names[1]` | most acids involved with wine
+`r tibble_names[2]` | the amount of acetic acid in wine
+`r tibble_names[3]` | adds freshness and flavor to wine
+`r tibble_names[4]` | amount of sugar remaining after fermentation
+`r tibble_names[5]` | amount of salt in wine
+`r tibble_names[6]` | prevents microbial growth and oxidation
+`r tibble_names[7]` | the amount of free and bound SO2
+`r tibble_names[8]` | density depending on alcohol and sugar levels in wine
+`r tibble_names[9]` | describes the acidity of wine
+`r tibble_names[10]` | acts as antimicrobial and antioxidant
+`r tibble_names[11]` | percent of alcohol content in wine
+`r tibble_names[12]` | the output value based on the above variables
+
+## Interactive
+
+```{r, }
+
+# First 10 observations
+kbl(red_wine_tibble[1:10,])  %>% 
+      kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+# EDA
+
+## General Overview of the Dataset
+
+```{r collapse=TRUE}
+# check the first and last 6 observations of the dataset
+head(red_wine_tibble)
+tail(red_wine_tibble)
+```
+
+```{r }
+# get a summary on the whole dataset
+summary(red_wine_tibble)
+
+# get a glimpse on the dataset
+glimpse(red_wine_tibble)
+
+# get the status of the dataset
+status(red_wine_tibble)
+
+# get a stat description on the variables in the dataset
+describe(red_wine_tibble)
+```
+
+>**Based on the above overview, we observe the following:**
+
+* There are 12 variables, 11 of whom contribute to the last variable, which is `quality`
+* There are 1599 rows and 12 columns that make up this dataset
+* `citric.acid` variable contains 132 `0` values, which might need to be accounted for during analysis
+* All the variables are of type of numeric, except the `quality`, which comes as an integer.
+* `quality` variable is a scale form 1 to 10, however, in this dataset the minimum is `3` and the maximum is `8`.
+
+Before we proceed to the next section, we notice that our variables are not formatted properly, thus
+we will tidy them up using the `clean_names()` function.
+
+```{r }
+# clean the data for any undesired forms
+red_wine_cleaned <- clean_names(dat = red_wine_tibble)
+```
+
+## Plotting the Variables
+
+We will conduct a series of plotting to better understand the dataset.
+
+### Univariate Plot
+
+```{r }
+# plot the quality variable
+ggplot(red_wine_cleaned) +
+    geom_bar(aes(quality))
+
+# plot the residual_sugar variable
+ggplot(red_wine_cleaned) + 
+    geom_bar(aes(residual_sugar))
+
+# plot the alcohol variable
+ggplot(red_wine_cleaned) +
+    geom_bar(aes(alcohol))
+
+```
+
+>**We can notice the following:**
+
+* Most of the wines are of `quality` 5 & 6
+* In plotting the `residual_sugar` variable, the graph is skewed to the right
+* In plotting the `alcohol` variable, the graph is skewed to the right
+
+### Multivariate Plot
+
+```{r }
+# plot both the quality and alcohol variables
+ggplot(red_wine_cleaned) +
+    geom_point(aes(quality, alcohol))
+
+# plot both the ph and fixed_acidity variables
+ggplot(red_wine_cleaned) + 
+    geom_point(aes(p_h, fixed_acidity))
+
+# plot both the alcohol and density variables
+ggplot(red_wine_cleaned) +
+    geom_point(aes(alcohol, density))
+```
+
+>**We can notice the following:**
+
+* High `alcohol` levels tend to be present in higher `quality` wine
+* As the `ph` level increases, the `fixed acidity` decreases
+* `Density` of the wine decreases as alcohol levels increase
+
+### Plot the correlation matrix to verify our findings
+
+```{r }
+corrplot(cor(red_wine_cleaned))
+```
+
+# Conclusion
+
+>In conclusion, we saw how different variables correlated to each other through the various graphs plotted,
+>alongside the correlation matrix that confirmed this study. We also noticed how most of the wine in this
+>dataset is mostly labeled as either of quality 5 or 6, few of which are outliers. This is just a basic EDA, as there
+>is more to uncover from this rich dataset.
