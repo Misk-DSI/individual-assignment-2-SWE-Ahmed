@@ -7,6 +7,6 @@ conclusions and observations on it. Published for individual assignment 2.
 > Links:
 
 * [Repository Link:](https://github.com/Misk-DSI/individual-assignment-2-SWE-Ahmed)
-* [[Wine-report]("./wine_report.html")](https://misk-dsi.github.io/individual-assignment-2-SWE-Ahmed/wine_report.html)
+* [Wine-report](https://misk-dsi.github.io/individual-assignment-2-SWE-Ahmed/wine_report.html)
 * [Wine-EDA-.R]("./src/wine_EDA.R")
 * [Wine-report-source]("./src/wine_report.Rmd")
